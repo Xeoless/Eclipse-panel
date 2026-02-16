@@ -3,135 +3,588 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eclipser - Dashboard</title>
-  <link rel="stylesheet" href="/style.css">
+  <title>Eclipser Dashboard</title>
   <style>
+    :root {
+      --bg: #000000;
+      --accent: #ff4500;
+      --accent-glow: #ff8c00;
+      --card-bg: rgba(15, 15, 15, 0.75);
+      --text: #ffedd5;
+      --border: rgba(255, 69, 0, 0.3);
+      --sidebar-width: 280px;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      background: radial-gradient(circle at center, #0f0500 0%, #000000 60%, #000814 100%);
-      color: #ffe5cc;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      margin: 0;
-      padding: 0;
+      background: radial-gradient(circle at center, #0f0500 0%, #000000 70%);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: -var(--sidebar-width);
+      width: var(--sidebar-width);
+      height: 100%;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border);
+      box-shadow: 0 0 30px rgba(255,69,0,0.15);
+      transition: left 0.4s ease;
+      z-index: 1000;
+      backdrop-filter: blur(6px);
     }
 
-    header {
+    #sidebar.open { left: 0; }
+
+    .sidebar-header {
+      padding: 1.5rem;
       text-align: center;
-      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header h2 {
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent);
+    }
+
+    .sidebar-menu {
+      padding: 1rem 0;
+    }
+
+    .sidebar-item {
+      display: block;
+      padding: 1rem 1.5rem;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-item:hover,
+    .sidebar-item.active {
+      background: rgba(255,69,0,0.12);
+      color: var(--accent-glow);
+      border-left: 4px solid var(--accent);
+    }
+
+    #toggle-btn {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1100;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255,69,0,0.6);
+      transition: all 0.3s;
+    }
+
+    #toggle-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 35px rgba(255,140,0,0.9);
+    }
+
+    #main-content {
+      padding: 1.5rem;
+      margin-left: 0;
+      transition: margin-left 0.4s ease;
+    }
+
+    #sidebar.open ~ #main-content {
+      margin-left: var(--sidebar-width);
+    }
+
+    .header {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
     }
 
     h1 {
-      font-size: 3.8rem;
-      margin: 0;
-      color: #ff4500;
-      text-shadow: 
-        0 0 10px #ff4500aa,
-        0 0 30px #ff450055;
-      letter-spacing: 2px;
+      font-size: 3.5rem;
+      color: var(--accent);
+      text-shadow: 0 0 25px rgba(255,69,0,0.6);
     }
 
-    .subtitle {
-      font-size: 1.4rem;
-      margin-top: 0.5rem;
-      opacity: 0.85;
-      color: #ff8c00;
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin: 2rem 0;
     }
 
-    .eclipse-symbol {
-      font-size: 8rem;
-      margin: 1rem 0 2rem;
-      animation: corona-pulse 8s infinite ease-in-out;
-    }
-
-    @keyframes corona-pulse {
-      0%, 100% { opacity: 0.8; transform: scale(1); }
-      50%      { opacity: 1;   transform: scale(1.12); }
-    }
-
-    .card {
-      background: rgba(10, 10, 10, 0.75);
-      border: 1px solid rgba(255, 69, 0, 0.25);
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.8rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 48px rgba(255,69,0,0.2);
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--accent-glow);
+      margin: 0.5rem 0;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.85;
+    }
+
+    .coins-bar {
+      background: rgba(255,69,0,0.15);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
       margin: 1.5rem 0;
-      box-shadow: 
-        0 8px 32px rgba(0,0,0,0.6),
-        inset 0 0 20px rgba(255,69,0,0.08);
-      backdrop-filter: blur(6px);
-      transition: all 0.3s ease;
+      text-align: center;
     }
 
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 
-        0 16px 48px rgba(255,69,0,0.18),
-        inset 0 0 30px rgba(255,69,0,0.12);
+    .coins-value {
+      font-size: 2.5rem;
+      color: #ffd700;
+      text-shadow: 0 0 15px #ffd700aa;
     }
 
-    .card h2 {
-      color: #ff8c00;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
-
-    .status {
+    .claim-btn {
+      margin-top: 1rem;
+      padding: 0.9rem 2rem;
+      background: linear-gradient(135deg, #ff4500, #ff8c00);
+      color: white;
+      border: none;
+      border-radius: 50px;
       font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(255,69,0,0.5);
+      transition: all 0.3s;
+    }
+
+    .claim-btn:disabled {
+      background: #444;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .claim-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(255,140,0,0.8);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .create-form {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 700px;
+      margin: 2rem auto;
+    }
+
+    label {
+      display: block;
+      margin: 1.2rem 0 0.4rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.9rem;
+      background: rgba(20,20,20,0.8);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .create-btn {
+      margin-top: 2rem;
+      width: 100%;
+      padding: 1.2rem;
+      background: linear-gradient(135deg, #ff4500, #ff8c00);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(255,69,0,0.6);
+      transition: all 0.3s;
+    }
+
+    .create-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 50px rgba(255,140,0,0.9);
+    }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .shop-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .shop-item h3 {
+      color: var(--accent-glow);
+      margin-bottom: 0.8rem;
+    }
+
+    .shop-price {
+      font-size: 1.6rem;
+      color: #ffd700;
       margin: 1rem 0;
     }
 
-    .coming-soon {
-      text-align: center;
-      font-size: 1.3rem;
-      opacity: 0.8;
-      margin: 3rem 0;
-      padding: 2rem;
-      background: rgba(255,69,0,0.05);
-      border-radius: 12px;
-      border: 1px dashed rgba(255,69,0,0.3);
+    .buy-btn {
+      padding: 0.8rem 1.5rem;
+      background: #ff4500;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
     }
 
-    footer {
-      text-align: center;
-      padding: 3rem 0 2rem;
-      opacity: 0.6;
-      font-size: 0.95rem;
+    .buy-btn:hover {
+      background: #ff8c00;
+    }
+
+    .buy-btn:disabled {
+      background: #444;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="eclipse-symbol">🌑🟠</div>
-      <h1>Eclipser Panel</h1>
-      <p class="subtitle">Minecraft Hosting Control</p>
-    </header>
 
-    <div class="card">
-      <h2>Status Overview</h2>
-      <p class="status">No servers running yet</p>
-      <p>Server creation & management features coming soon.</p>
+  <!-- Sidebar Toggle Button -->
+  <button id="toggle-btn">☰</button>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <h2>Eclipser</h2>
     </div>
-
-    <div class="card">
-      <h2>Quick Actions</h2>
-      <p>Dashboard under construction — more controls will appear here.</p>
+    <div class="sidebar-menu">
+      <a href="#" class="sidebar-item active" data-tab="home">Home</a>
+      <a href="#" class="sidebar-item" data-tab="create">Create Server</a>
+      <a href="#" class="sidebar-item" data-tab="shop">Shop</a>
+      <a href="#" class="sidebar-item" data-tab="coins">Coins</a>
     </div>
-
-    <div class="coming-soon">
-      Solar eclipse theme in progress.<br>
-      Expect glowing buttons, starry particles, and full server controls soon.
-    </div>
-
-    <footer>
-      © 2026 Kevin • Eclipser Project
-    </footer>
   </div>
+
+  <!-- Main Content -->
+  <div id="main-content">
+    <div class="container">
+      <div class="header">
+        <h1>Eclipser Dashboard</h1>
+      </div>
+
+      <!-- Coins Bar -->
+      <div class="coins-bar">
+        <div class="coins-value" id="coins-display">0 Coins</div>
+        <button class="claim-btn" id="claim-daily">Claim 50 Daily Coins</button>
+      </div>
+
+      <!-- Home Tab -->
+      <div id="home" class="tab-content active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Servers</div>
+            <div class="stat-value" id="servers-used">0</div>
+            <div class="stat-label">/ 4</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">CPU</div>
+            <div class="stat-value" id="cpu-used">0</div>
+            <div class="stat-label">% / 400%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Disk</div>
+            <div class="stat-value" id="disk-used">0</div>
+            <div class="stat-label">GB / 20 GB</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Allocations</div>
+            <div class="stat-value" id="alloc-used">0</div>
+            <div class="stat-label">/ 3</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Backups</div>
+            <div class="stat-value" id="backup-used">0</div>
+            <div class="stat-label">/ 3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Server Tab -->
+      <div id="create" class="tab-content">
+        <div class="create-form">
+          <h2>Create Server</h2>
+
+          <label>Server Name</label>
+          <input type="text" id="server-name" placeholder="My Awesome Server">
+
+          <label>CPU (%)</label>
+          <input type="number" id="cpu-amount" min="50" max="400" value="100" step="50">
+
+          <label>Node (Location)</label>
+          <select id="node-select">
+            <option value="india">India Node</option>
+            <option value="usa">USA Node</option>
+            <option value="europe">Europe Node</option>
+            <option value="singapore">Singapore Node</option>
+          </select>
+
+          <label>Server Allocations</label>
+          <input type="number" id="alloc-amount" min="1" max="3" value="1">
+
+          <label>Backups</label>
+          <input type="number" id="backup-amount" min="0" max="3" value="1">
+
+          <label>Server Type</label>
+          <select id="server-type">
+            <option value="paper">PaperMC (Plugins)</option>
+            <option value="purpur">Purpur (Optimized)</option>
+            <option value="fabric">Fabric (Mods)</option>
+            <option value="forge">Forge (Heavy Mods)</option>
+            <option value="bungeecord">BungeeCord (Proxy)</option>
+            <option value="velocity">Velocity (Proxy)</option>
+          </select>
+
+          <button class="create-btn" id="create-server-btn">Create Server</button>
+        </div>
+      </div>
+
+      <!-- Shop Tab -->
+      <div id="shop" class="tab-content">
+        <h2>Shop - Buy Upgrades</h2>
+        <div class="shop-grid">
+          <div class="shop-item">
+            <h3>+1 Server Slot</h3>
+            <div class="shop-price">150 Coins</div>
+            <button class="buy-btn" data-upgrade="server" data-cost="150">Buy</button>
+          </div>
+          <div class="shop-item">
+            <h3>+100% CPU</h3>
+            <div class="shop-price">200 Coins</div>
+            <button class="buy-btn" data-upgrade="cpu" data-cost="200">Buy</button>
+          </div>
+          <div class="shop-item">
+            <h3>+5 GB Disk</h3>
+            <div class="shop-price">120 Coins</div>
+            <button class="buy-btn" data-upgrade="disk" data-cost="120">Buy</button>
+          </div>
+          <div class="shop-item">
+            <h3>+1 Allocation</h3>
+            <div class="shop-price">80 Coins</div>
+            <button class="buy-btn" data-upgrade="alloc" data-cost="80">Buy</button>
+          </div>
+          <div class="shop-item">
+            <h3>+1 Backup Slot</h3>
+            <div class="shop-price">90 Coins</div>
+            <button class="buy-btn" data-upgrade="backup" data-cost="90">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coins Tab -->
+      <div id="coins" class="tab-content">
+        <h2>Coins</h2>
+        <p class="coins-value" id="coins-display-tab">0 Coins</p>
+        <button class="claim-btn" id="claim-daily-tab">Claim 50 Daily Coins</button>
+        <p style="margin-top:2rem; opacity:0.8;">
+          Earn free coins daily or buy more upgrades in the Shop tab.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ──────────────────────────────────────────────
+    // Local Storage Helpers
+    // ──────────────────────────────────────────────
+    function loadData() {
+      return JSON.parse(localStorage.getItem('eclipserData')) || {
+        coins: 0,
+        serversMax: 4,
+        serversUsed: 0,
+        cpuMax: 400,
+        cpuUsed: 0,
+        diskMax: 20,
+        diskUsed: 0,
+        allocMax: 3,
+        allocUsed: 0,
+        backupMax: 3,
+        backupUsed: 0,
+        lastClaim: 0
+      };
+    }
+
+    function saveData(data) {
+      localStorage.setItem('eclipserData', JSON.stringify(data));
+      updateDisplays(data);
+    }
+
+    function updateDisplays(data) {
+      document.getElementById('coins-display').textContent = data.coins + ' Coins';
+      document.getElementById('coins-display-tab').textContent = data.coins + ' Coins';
+
+      document.getElementById('servers-used').textContent = data.serversUsed;
+      document.getElementById('cpu-used').textContent = data.cpuUsed;
+      document.getElementById('disk-used').textContent = data.diskUsed;
+      document.getElementById('alloc-used').textContent = data.allocUsed;
+      document.getElementById('backup-used').textContent = data.backupUsed;
+    }
+
+    // ──────────────────────────────────────────────
+    // Sidebar Toggle & Tab Switching
+    // ──────────────────────────────────────────────
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const tabs = document.querySelectorAll('.sidebar-item');
+
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ──────────────────────────────────────────────
+    // Daily Claim
+    // ──────────────────────────────────────────────
+    const claimBtn = document.getElementById('claim-daily');
+    const claimBtnTab = document.getElementById('claim-daily-tab');
+
+    function canClaim() {
+      const data = loadData();
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      return now - data.lastClaim >= oneDay;
+    }
+
+    function updateClaimButtons() {
+      const disabled = !canClaim();
+      claimBtn.disabled = disabled;
+      claimBtnTab.disabled = disabled;
+      claimBtn.textContent = disabled ? 'Come back tomorrow' : 'Claim 50 Daily Coins';
+      claimBtnTab.textContent = disabled ? 'Come back tomorrow' : 'Claim 50 Daily Coins';
+    }
+
+    [claimBtn, claimBtnTab].forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!canClaim()) return;
+        let data = loadData();
+        data.coins += 50;
+        data.lastClaim = Date.now();
+        saveData(data);
+        updateClaimButtons();
+        alert('Claimed 50 coins!');
+      });
+    });
+
+    // ──────────────────────────────────────────────
+    // Shop Purchases
+    // ──────────────────────────────────────────────
+    document.querySelectorAll('.buy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cost = parseInt(btn.dataset.cost);
+        const upgrade = btn.dataset.upgrade;
+        let data = loadData();
+
+        if (data.coins < cost) {
+          alert('Not enough coins!');
+          return;
+        }
+
+        data.coins -= cost;
+
+        switch (upgrade) {
+          case 'server': data.serversMax += 1; break;
+          case 'cpu':    data.cpuMax += 100; break;
+          case 'disk':   data.diskMax += 5; break;
+          case 'alloc':  data.allocMax += 1; break;
+          case 'backup': data.backupMax += 1; break;
+        }
+
+        saveData(data);
+        alert(`Purchased! ${upgrade} upgraded.`);
+      });
+    });
+
+    // ──────────────────────────────────────────────
+    // Create Server (fake for now - just updates limits)
+    // ──────────────────────────────────────────────
+    document.getElementById('create-server-btn').addEventListener('click', () => {
+      let data = loadData();
+
+      if (data.serversUsed >= data.serversMax) {
+        alert('You have reached your server limit! Buy more slots in the Shop.');
+        return;
+      }
+
+      const cpu = parseInt(document.getElementById('cpu-amount').value) || 0;
+      if (data.cpuUsed + cpu > data.cpuMax) {
+        alert('Not enough CPU available! Buy more in the Shop.');
+        return;
+      }
+
+      // Fake creation success
+      data.serversUsed += 1;
+      data.cpuUsed += cpu;
+      // could add disk, alloc, backup usage here too
+
+      saveData(data);
+      alert('Server created successfully! (fake for now)');
+    });
+
+    // Init
+    const initialData = loadData();
+    updateDisplays(initialData);
+    updateClaimButtons();
+  </script>
 </body>
 </html>
