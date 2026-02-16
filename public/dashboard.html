@@ -357,13 +357,16 @@
           <h2>Create Server</h2>
 
           <label>Server Name</label>
-          <input type="text" id="server-name" placeholder="My Awesome Server">
+          <input type="text" id="server-name" placeholder="My Awesome Server" required>
 
           <label>CPU (%)</label>
-          <input type="number" id="cpu-amount" min="50" max="400" value="100" step="50">
+          <input type="number" id="cpu-amount" min="50" max="400" value="100" step="50" required>
+
+          <label>Disk (GB)</label>
+          <input type="number" id="disk-amount" min="1" max="20" value="5" step="1" required>
 
           <label>Node (Location)</label>
-          <select id="node-select">
+          <select id="node-select" required>
             <option value="india">India Node</option>
             <option value="usa">USA Node</option>
             <option value="europe">Europe Node</option>
@@ -371,13 +374,13 @@
           </select>
 
           <label>Server Allocations</label>
-          <input type="number" id="alloc-amount" min="1" max="3" value="1">
+          <input type="number" id="alloc-amount" min="1" max="3" value="1" required>
 
           <label>Backups</label>
-          <input type="number" id="backup-amount" min="0" max="3" value="1">
+          <input type="number" id="backup-amount" min="0" max="3" value="1" required>
 
           <label>Server Type</label>
-          <select id="server-type">
+          <select id="server-type" required>
             <option value="paper">PaperMC (Plugins)</option>
             <option value="purpur">Purpur (Optimized)</option>
             <option value="fabric">Fabric (Mods)</option>
@@ -435,9 +438,7 @@
   </div>
 
   <script>
-    // ──────────────────────────────────────────────
     // Local Storage Helpers
-    // ──────────────────────────────────────────────
     function loadData() {
       return JSON.parse(localStorage.getItem('eclipserData')) || {
         coins: 0,
@@ -471,9 +472,7 @@
       document.getElementById('backup-used').textContent = data.backupUsed;
     }
 
-    // ──────────────────────────────────────────────
     // Sidebar Toggle & Tab Switching
-    // ──────────────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggle-btn');
     const tabs = document.querySelectorAll('.sidebar-item');
@@ -493,9 +492,7 @@
       });
     });
 
-    // ──────────────────────────────────────────────
     // Daily Claim
-    // ──────────────────────────────────────────────
     const claimBtn = document.getElementById('claim-daily');
     const claimBtnTab = document.getElementById('claim-daily-tab');
 
@@ -526,9 +523,7 @@
       });
     });
 
-    // ──────────────────────────────────────────────
     // Shop Purchases
-    // ──────────────────────────────────────────────
     document.querySelectorAll('.buy-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const cost = parseInt(btn.dataset.cost);
@@ -555,9 +550,7 @@
       });
     });
 
-    // ──────────────────────────────────────────────
     // Create Server (fake for now - just updates limits)
-    // ──────────────────────────────────────────────
     document.getElementById('create-server-btn').addEventListener('click', () => {
       let data = loadData();
 
@@ -567,21 +560,29 @@
       }
 
       const cpu = parseInt(document.getElementById('cpu-amount').value) || 0;
+      const disk = parseInt(document.getElementById('disk-amount').value) || 0;
+
       if (data.cpuUsed + cpu > data.cpuMax) {
         alert('Not enough CPU available! Buy more in the Shop.');
+        return;
+      }
+
+      if (data.diskUsed + disk > data.diskMax) {
+        alert('Not enough Disk space available! Buy more in the Shop.');
         return;
       }
 
       // Fake creation success
       data.serversUsed += 1;
       data.cpuUsed += cpu;
-      // could add disk, alloc, backup usage here too
+      data.diskUsed += disk;
+      // could add alloc, backup usage here too
 
       saveData(data);
       alert('Server created successfully! (fake for now)');
     });
 
-    // Init
+    // Init on load
     const initialData = loadData();
     updateDisplays(initialData);
     updateClaimButtons();
