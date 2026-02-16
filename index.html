@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eclipser Panel – Coming Soon</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at center, #1a0f00 0%, #000000 70%);
+      color: #ffedd5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      color: #ff4500;
+      text-shadow: 0 0 20px #ff4500aa;
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .eclipse {
+      font-size: 8rem;
+      margin: 1rem 0 2rem;
+      animation: pulse 4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.08); }
+    }
+
+    .message {
+      font-size: 1.2rem;
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    a {
+      color: #ff8c00;
+      text-decoration: none;
+      font-weight: bold;
+      border-bottom: 2px solid #ff8c0044;
+      transition: all 0.2s;
+    }
+
+    a:hover {
+      color: #ff4500;
+      border-bottom-color: #ff4500aa;
+    }
+
+    footer {
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="eclipse">🌑🟠</div>
+
+  <h1>Eclipser Panel</h1>
+  <p class="subtitle">Minecraft Hosting Panel</p>
+
+  <p class="message">
+    Under active development.<br>
+    Coming soon – your own solar eclipse themed control panel for Minecraft servers.
+  </p>
+
+  <p class="message">
+    <a href="https://github.com/xeolesEclipse-panelel" target="_blank">
+      → View progress on GitHub
+    </a>
+  </p>
+
+  <footer>
+    © 2026 Eclipser • Built with love and orange glow
+  </footer>
+
+</body>
+</html>
