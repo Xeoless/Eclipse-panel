@@ -10,8 +10,8 @@
   <div class="container">
     <h1>Eclipser Panel 🌑🟠</h1>
 
-    <!-- Placeholder for error message (you can add JS later if needed) -->
-    <p id="error-msg" class="error" style="display:none;"></p>
+    <!-- Simple error display area -->
+    <p id="error" class="error" style="color: #ff6b6b; margin-bottom: 1rem; min-height: 1.2rem;"></p>
 
     <form method="POST" action="/login">
       <input 
@@ -33,16 +33,15 @@
     <p>No account yet? <a href="/register">Register here</a></p>
   </div>
 
-  <!-- Optional simple JS for client-side feedback (optional) -->
+  <!-- Optional JS to show client-side message (helps debug) -->
   <script>
-    // Basic form validation feedback
     document.querySelector('form').addEventListener('submit', function(e) {
-      const username = document.querySelector('[name="username"]').value.trim();
-      const password = document.querySelector('[name="password"]').value.trim();
-      if (!username || !password) {
+      const user = document.querySelector('[name="username"]').value.trim();
+      const pass = document.querySelector('[name="password"]').value.trim();
+      
+      if (!user || !pass) {
         e.preventDefault();
-        document.getElementById('error-msg').textContent = 'Please fill both fields';
-        document.getElementById('error-msg').style.display = 'block';
+        document.getElementById('error').textContent = 'Fill in both fields';
       }
     });
   </script>
