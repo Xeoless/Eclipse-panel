@@ -6,29 +6,132 @@
   <title>Eclipser - Dashboard</title>
   <link rel="stylesheet" href="/style.css">
   <style>
-    .welcome { font-size: 1.6rem; margin: 1rem 0; color: #ff8c00; }
-    .logout { 
-      display: inline-block; 
-      margin: 1.5rem 0; 
-      padding: 0.8rem 1.5rem; 
-      background: #ff4500; 
-      color: white; 
-      border-radius: 6px; 
-      text-decoration: none; 
+    body {
+      background: radial-gradient(circle at center, #0f0500 0%, #000000 60%, #000814 100%);
+      color: #ffe5cc;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    .logout:hover { background: #ff8c00; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+
+    h1 {
+      font-size: 3.8rem;
+      margin: 0;
+      color: #ff4500;
+      text-shadow: 
+        0 0 10px #ff4500aa,
+        0 0 30px #ff450055;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 1.4rem;
+      margin-top: 0.5rem;
+      opacity: 0.85;
+      color: #ff8c00;
+    }
+
+    .eclipse-symbol {
+      font-size: 8rem;
+      margin: 1rem 0 2rem;
+      animation: corona-pulse 8s infinite ease-in-out;
+    }
+
+    @keyframes corona-pulse {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.12); }
+    }
+
+    .card {
+      background: rgba(10, 10, 10, 0.75);
+      border: 1px solid rgba(255, 69, 0, 0.25);
+      border-radius: 12px;
+      padding: 1.8rem;
+      margin: 1.5rem 0;
+      box-shadow: 
+        0 8px 32px rgba(0,0,0,0.6),
+        inset 0 0 20px rgba(255,69,0,0.08);
+      backdrop-filter: blur(6px);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 
+        0 16px 48px rgba(255,69,0,0.18),
+        inset 0 0 30px rgba(255,69,0,0.12);
+    }
+
+    .card h2 {
+      color: #ff8c00;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    .status {
+      font-size: 1.1rem;
+      margin: 1rem 0;
+    }
+
+    .coming-soon {
+      text-align: center;
+      font-size: 1.3rem;
+      opacity: 0.8;
+      margin: 3rem 0;
+      padding: 2rem;
+      background: rgba(255,69,0,0.05);
+      border-radius: 12px;
+      border: 1px dashed rgba(255,69,0,0.3);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      opacity: 0.6;
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Dashboard 🌑🟠</h1>
-    
-    <p class="welcome">Logged in successfully!</p>
-    
-    <h2>Your Servers</h2>
-    <p>(Server management coming soon – currently no servers listed)</p>
+    <header>
+      <div class="eclipse-symbol">🌑🟠</div>
+      <h1>Eclipser Panel</h1>
+      <p class="subtitle">Minecraft Hosting Control</p>
+    </header>
 
-    <a href="/logout" class="logout">Logout</a>
+    <div class="card">
+      <h2>Status Overview</h2>
+      <p class="status">No servers running yet</p>
+      <p>Server creation & management features coming soon.</p>
+    </div>
+
+    <div class="card">
+      <h2>Quick Actions</h2>
+      <p>Dashboard under construction — more controls will appear here.</p>
+    </div>
+
+    <div class="coming-soon">
+      Solar eclipse theme in progress.<br>
+      Expect glowing buttons, starry particles, and full server controls soon.
+    </div>
+
+    <footer>
+      © 2026 Kevin • Eclipser Project
+    </footer>
   </div>
 </body>
 </html>
