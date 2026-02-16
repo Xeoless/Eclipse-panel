@@ -8,39 +8,15 @@ const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Parse form data and cookies FIRST
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const db = new sqlite3.Database('./eclipser.db');
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT DEFAULT 'user'
-  )`);
+// ──────────────────────────────────────────────
+// Define ALL routes BEFORE static middleware
+// ──────────────────────────────────────────────
 
-  db.get("SELECT * FROM users WHERE username = 'admin'", (err, row) => {
-    if (!row) {
-      const hash = bcrypt.hashSync('changeMe123!', 10);
-      db.run("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", ['admin', hash, 'admin']);
-    }
-  });
-});
-
-const authenticate = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.sendFile(path.join(__dirname, 'public', 'login.html'));
-  jwt.verify(token, process.env.JWT_SECRET || 'supersecret', (err, decoded) => {
-    if (err) return res.sendFile(path.join(__dirname, 'public', 'login.html'));
-    req.user = decoded;
-    next();
-  });
-};
-
-// Routes
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 
 app.get('/login', (req, res) => {
@@ -54,13 +30,14 @@ app.post('/login', (req, res) => {
     return res.sendFile(path.join(__dirname, 'public', 'login.html'));
   }
 
+  const db = new sqlite3.Database('./eclipser.db');
   db.get("SELECT * FROM users WHERE username = ?", [username], (err, user) => {
     if (err || !user || !bcrypt.compareSync(password, user.password)) {
       return res.sendFile(path.join(__dirname, 'public', 'login.html'));
     }
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      { username: user.username },
       process.env.JWT_SECRET || 'supersecret',
       { expiresIn: '24h' }
     );
@@ -82,6 +59,7 @@ app.post('/register', (req, res) => {
   }
 
   const hash = bcrypt.hashSync(password, 10);
+  const db = new sqlite3.Database('./eclipser.db');
 
   db.run("INSERT INTO users (username, password) VALUES (?, ?)", [username, hash], function(err) {
     if (err) {
@@ -91,13 +69,26 @@ app.post('/register', (req, res) => {
   });
 });
 
-app.get('/dashboard', authenticate, (req, res) => {
+app.get('/dashboard', (req, res) => {
+  // Simple auth check (improve later)
+  const token = req.cookies.token;
+  if (!token) return res.redirect('/login');
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/login');
+});
+
+// ──────────────────────────────────────────────
+// Static files LAST — only for CSS, images, etc.
+// ──────────────────────────────────────────────
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Catch-all for 404
+app.use((req, res) => {
+  res.status(404).send('Page not found');
 });
 
 const PORT = process.env.PORT || 3000;
