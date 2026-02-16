@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eclipser - Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome, <%= user.username %> 🌑</h1>
+    <a href="/logout" class="logout">Logout</a>
+
+    <h2>Your Servers</h2>
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+    <% if (servers.length === 0) { %>
+      <p>No servers yet. (Create one coming soon!)</p>
+    <% } else { %>
+      <ul class="server-list">
+        <% servers.forEach(server => { %>
+          <li>
+            <strong><%= server.name %></strong> 
+            <span class="status <%= server.state %>"><%= server.state %> - <%= server.status %></span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+</body>
+</html>
