@@ -20,54 +20,54 @@
     }
 
     h1 {
-      font-size: 5rem;
-      margin-bottom: 0.8rem;
+      font-size: 5.5rem;
+      margin-bottom: 0.5rem;
       color: #ff4500;
-      text-shadow: 0 0 30px #ff4500aa;
+      text-shadow: 0 0 35px #ff4500aa;
     }
 
     .eclipse {
-      font-size: 12rem;
-      margin: 0.5rem 0 2rem;
-      animation: glow 6s infinite alternate;
+      font-size: 14rem;
+      margin: 0.5rem 0 2.5rem;
+      animation: glow 7s infinite alternate;
     }
 
     @keyframes glow {
-      from { opacity: 0.7; transform: scale(1); }
-      to   { opacity: 1;   transform: scale(1.12); }
+      from { opacity: 0.65; transform: scale(0.95); }
+      to   { opacity: 1;   transform: scale(1.15); }
     }
 
     .enter-btn {
       display: inline-block;
-      margin: 2rem 0;
-      padding: 1.4rem 4rem;
-      font-size: 1.8rem;
+      margin: 3rem 0;
+      padding: 1.6rem 5rem;
+      font-size: 2rem;
       font-weight: bold;
       color: white;
       background: linear-gradient(135deg, #ff4500, #ff8c00);
       border: none;
-      border-radius: 60px;
+      border-radius: 70px;
       text-decoration: none;
-      box-shadow: 0 0 50px rgba(255,69,0,0.8);
-      transition: all 0.3s ease;
+      box-shadow: 0 0 60px rgba(255,69,0,0.7);
+      transition: all 0.4s ease;
     }
 
     .enter-btn:hover {
-      transform: scale(1.08) translateY(-5px);
-      box-shadow: 0 0 80px rgba(255,140,0,1);
+      transform: scale(1.1) translateY(-8px);
+      box-shadow: 0 0 100px rgba(255,140,0,0.95);
     }
 
     .subtitle {
-      font-size: 1.8rem;
-      margin: 1.5rem 0;
+      font-size: 1.9rem;
+      margin: 1rem 0 2rem;
       opacity: 0.9;
     }
 
     footer {
       position: absolute;
-      bottom: 2rem;
+      bottom: 2.5rem;
       font-size: 1rem;
-      opacity: 0.6;
+      opacity: 0.55;
     }
   </style>
 </head>
@@ -76,13 +76,12 @@
   <div class="eclipse">🌑🟠</div>
 
   <h1>Eclipser Panel</h1>
-  <p class="subtitle">Minecraft Server Control</p>
+  <p class="subtitle">Minecraft Server Hosting Control</p>
 
-  <!-- Redirects directly to static login.html file -->
-  <a href="public/dashboard.html" class="enter-btn">Enter the Eclipse →</a>
+  <a href="/dashboard" class="enter-btn">Enter the Eclipse →</a>
 
   <footer>
-    Eclipser • 2026 • Under construction
+    © 2026 • All rights reserved
   </footer>
 
 </body>
