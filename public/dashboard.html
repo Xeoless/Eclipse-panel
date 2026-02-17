@@ -438,7 +438,9 @@
   </div>
 
   <script>
-    // Local Storage Helpers
+    // ──────────────────────────────────────────────
+    // Local Storage Helpers (for fake limits & coins)
+    // ──────────────────────────────────────────────
     function loadData() {
       return JSON.parse(localStorage.getItem('eclipserData')) || {
         coins: 0,
@@ -472,7 +474,9 @@
       document.getElementById('backup-used').textContent = data.backupUsed;
     }
 
+    // ──────────────────────────────────────────────
     // Sidebar Toggle & Tab Switching
+    // ──────────────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggle-btn');
     const tabs = document.querySelectorAll('.sidebar-item');
@@ -492,7 +496,9 @@
       });
     });
 
-    // Daily Claim
+    // ──────────────────────────────────────────────
+    // Daily Coin Claim
+    // ──────────────────────────────────────────────
     const claimBtn = document.getElementById('claim-daily');
     const claimBtnTab = document.getElementById('claim-daily-tab');
 
@@ -523,7 +529,9 @@
       });
     });
 
-    // Shop Purchases
+    // ──────────────────────────────────────────────
+    // Shop Purchases (fake - updates local limits)
+    // ──────────────────────────────────────────────
     document.querySelectorAll('.buy-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const cost = parseInt(btn.dataset.cost);
@@ -550,36 +558,51 @@
       });
     });
 
-    // Create Server (fake for now - just updates limits)
-    document.getElementById('create-server-btn').addEventListener('click', () => {
-      let data = loadData();
+    // ──────────────────────────────────────────────
+    // Real Minecraft Server Creation (calls /api/create-server)
+    // ──────────────────────────────────────────────
+    document.getElementById('create-server-btn').addEventListener('click', async () => {
+      const serverName = document.getElementById('server-name').value.trim();
+      const cpu = parseInt(document.getElementById('cpu-amount').value) || 100;
+      const disk = parseInt(document.getElementById('disk-amount').value) || 5;
+      const node = document.getElementById('node-select').value;
+      const alloc = parseInt(document.getElementById('alloc-amount').value) || 1;
+      const backup = parseInt(document.getElementById('backup-amount').value) || 1;
+      const type = document.getElementById('server-type').value;
 
-      if (data.serversUsed >= data.serversMax) {
-        alert('You have reached your server limit! Buy more slots in the Shop.');
+      if (!serverName) {
+        alert('Server name is required!');
         return;
       }
 
-      const cpu = parseInt(document.getElementById('cpu-amount').value) || 0;
-      const disk = parseInt(document.getElementById('disk-amount').value) || 0;
-
-      if (data.cpuUsed + cpu > data.cpuMax) {
-        alert('Not enough CPU available! Buy more in the Shop.');
+      if (cpu < 50 || cpu > 400) {
+        alert('CPU must be between 50 and 400%!');
         return;
       }
 
-      if (data.diskUsed + disk > data.diskMax) {
-        alert('Not enough Disk space available! Buy more in the Shop.');
+      if (disk < 1 || disk > 20) {
+        alert('Disk must be between 1 and 20 GB!');
         return;
       }
 
-      // Fake creation success
-      data.serversUsed += 1;
-      data.cpuUsed += cpu;
-      data.diskUsed += disk;
-      // could add alloc, backup usage here too
+      try {
+        const response = await fetch('/api/create-server', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ serverName, cpu, disk, node, alloc, backup, type })
+        });
 
-      saveData(data);
-      alert('Server created successfully! (fake for now)');
+        const data = await response.json();
+
+        if (data.success) {
+          alert(data.message);
+          // Optional: refresh fake stats or show success UI
+        } else {
+          alert('Creation failed: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
     });
 
     // Init on load
@@ -588,4 +611,4 @@
     updateClaimButtons();
   </script>
 </body>
-</html>
+  </html>
