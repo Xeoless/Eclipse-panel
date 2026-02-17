@@ -8,12 +8,12 @@ const docker = new Docker();
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// Serve dashboard at root and /dashboard
+// Dashboard at root and /dashboard
 app.get(['/', '/dashboard'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Real Minecraft server creation API
+// Real create server API
 app.post('/api/create-server', async (req, res) => {
   const {
     serverName = 'myserver',
@@ -51,32 +51,29 @@ app.post('/api/create-server', async (req, res) => {
       ],
       ExposedPorts: { '25565/tcp': {} },
       HostConfig: {
-        PortBindings: { '25565/tcp': [{ HostPort: '' }] }, // auto-assign host port
-        Memory: 2147483648, // 2 GB (adjust later)
-        NanoCPUs: Math.floor(cpu * 10000000), // rough % to nanoCPUs
-        Binds: [`${path.join(__dirname, 'volumes', serverName)}:/data`] // persistent volume
+        PortBindings: { '25565/tcp': [{ HostPort: '' }] },
+        Memory: 2147483648,
+        NanoCPUs: Math.floor(cpu * 10000000),
+        Binds: [`${path.join(__dirname, 'volumes', serverName)}:/data`]
       },
       Tty: true,
       OpenStdin: true,
-      Labels: {
-        'eclipser.owner': 'user', // add real user later
-        'eclipser.node': node
-      }
+      Labels: { 'eclipser.owner': 'user' }
     });
 
     await container.start();
 
     res.json({
       success: true,
-      message: `Minecraft server "${serverName}" (${mcType}) created and started!`,
+      message: `Server "${serverName}" (${mcType}) created!`,
       containerId: container.id.slice(0, 12)
     });
   } catch (err) {
-    console.error('Docker creation failed:', err);
-    res.status(500).json({ success: false, error: err.message || 'Failed to create server' });
+    console.error('Creation error:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
 app.listen(3000, () => {
-  console.log('Eclipser running on port 3000');
+  console.log('Running on port 3000');
 });
